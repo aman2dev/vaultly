@@ -1,5 +1,6 @@
 import express, { json } from "express";
 import cors from "cors";
+import { authRouter } from "./api/v1/auth/controller";
 
 const app = express();
 
@@ -10,6 +11,9 @@ app.use(cors());
 app.get("/", (req, res) => {
     res.send("hey");
 })
+
+//routes
+app.use("/api/v1/auth", authRouter)
 
 
 app.listen(3000, () => {
