@@ -42,3 +42,39 @@ router.post("/createvault", authMiddleware, (req, res) => {
     }
 
 });
+
+
+router.get("/vaults", authMiddleware, (req, res) => {
+
+    const userId = req.userId;
+
+    if (!userId) {
+        return res.status(402).json({ error: "unauthorized" });
+    }
+
+    try {
+        const getVaults = prisma.userData.findMany({
+            where: {
+                authorId: userId
+            }
+        })
+
+        if (!getVaults) {
+            return res.send("no userdata founded...")
+        }
+
+        res.json({
+            getVaults
+        })
+
+    } catch (error) {
+        console.log("error", error)
+    }
+
+
+
+})
+
+
+
+export { router as vaultRouter }
