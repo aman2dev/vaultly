@@ -3,8 +3,52 @@ import { Router } from "express";
 import { prisma } from "@repo/database"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
+import passport from "../../../passport";
 
 const router: Router = Router()
+
+// Google OAuth Login
+router.get(
+    "/google",
+    passport.authenticate("google", {
+        scope: ["profile", "email"],
+        session: false,
+    })
+);
+
+// Google OAuth Callback
+router.get(
+    "/google/callback",
+    passport.authenticate("google", {
+        session: false,
+        failureRedirect: "/api/v1/auth/signin",
+    }),
+    (req, res) => {
+        try {
+            const user = req.user as { id: string; email: string; userName: string };
+
+            if (!user) {
+                return res.status(401).json({ message: "Google authentication failed" });
+            }
+
+            const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, {
+                expiresIn: "2d",
+            });
+
+            res.cookie("token", token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "lax",
+            });
+
+            const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+            return res.redirect(`${frontendUrl}`);
+        } catch (error) {
+            console.error("Google callback error:", error);
+            return res.status(500).json({ message: "Internal server error" });
+        }
+    }
+);
 
 router.post("/signup", async (req, res) => {
     const data = req.body;
@@ -66,6 +110,10 @@ router.post("/signin", async (req, res) => {
 
         if (!exitingUser) {
             return res.status(404).json({ message: "user dont exitis.." })
+        }
+
+        if (!exitingUser.password) {
+            return res.status(400).json({ message: "Please sign in using Google" })
         }
 
         const isPasswordVaild = await bcrypt.compare(data.password, exitingUser.password)
