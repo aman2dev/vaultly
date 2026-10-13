@@ -1,5 +1,6 @@
 import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
+import Transformation from "../components/Transformation";
 import Features from "../components/Features";
 
 export default function Home() {
@@ -13,6 +14,9 @@ export default function Home() {
 
       {/* Hero Section */}
       <Hero />
+
+      {/* Before / After Transformation Section */}
+      <Transformation />
 
       {/* Security Features Section */}
       <Features />
