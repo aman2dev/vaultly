@@ -3,6 +3,7 @@ import Hero from "../components/Hero";
 import Transformation from "../components/Transformation";
 import Features from "../components/Features";
 import HowItWorks from "../components/HowItWorks";
+import Reviews from "../components/Reviews";
 
 export default function Home() {
   return (
@@ -24,6 +25,9 @@ export default function Home() {
 
       {/* How It Works (3-Step Setup) Section */}
       <HowItWorks />
+
+      {/* Reviews & Testimonials Section */}
+      <Reviews />
     </main>
   );
 }
